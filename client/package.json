@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.23",
-    "postcss": "^8.5.6",
+
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "vite": "^7.3.1"
@@ -20,6 +20,7 @@
     "axios": "^1.13.4",
     "lucide-react": "^0.563.0",
     "react": "^19.2.4",
+    "postcss": "^8.5.6",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.0",
     "typewriter-effect": "^2.22.0"
