@@ -40,7 +40,7 @@ export default function Dashboard() {
   const fetchPosts = async () => {
     setLoadingPosts(true);
     try {
-      const res = await fetch('http://localhost:5000/api/posts');
+      const res = await fetch(`${API_URL}/posts`);
       if (res.ok) {
         const data = await res.json();
         setPosts(data);
@@ -61,7 +61,7 @@ export default function Dashboard() {
       technologies: project.technologies.split(',').map(t => t.trim().toUpperCase())
     };
     try {
-      const res = await fetch('http://localhost:5000/api/projects', {
+      const res = await fetch(`${API_URL}/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export default function Dashboard() {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch('http://localhost:5000/api/skills', {
+      const res = await fetch(`${API_URL}/skills`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await fetch('http://localhost:5000/api/posts', {
+      const res = await fetch(`${API_URL}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function Dashboard() {
       if (res.ok) {
         alert("✅ BLOG_POST_PUBLICADO_CON_ÉXITO");
         setPost({ title: '', content: '', category: 'Backend' });
-        fetchPosts(); // Recargar la lista de posts
+        fetchPosts();
       } else {
         alert("❌ ERROR: No se pudo publicar el post");
       }
@@ -127,7 +127,7 @@ export default function Dashboard() {
 
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+      const res = await fetch(`${API_URL}/posts/${postId}`, {
         method: 'DELETE',
         headers: {
           'x-auth-token': token
@@ -135,7 +135,7 @@ export default function Dashboard() {
       });
       if (res.ok) {
         alert("✅ BLOG_ELIMINADO_EXITOSAMENTE");
-        fetchPosts(); // Recargar la lista de posts
+        fetchPosts();
       } else {
         alert("❌ ERROR: No se pudo eliminar el blog");
       }
@@ -244,143 +244,6 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-        )}
-
-      </div>
-    </div>
-  );
-}
-
-  // 2. Manejadores de envío (Submit)
-  const handleProjectSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    const projectData = {
-      ...project,
-      technologies: project.technologies.split(',').map(t => t.trim().toUpperCase())
-    };
-    try {
-      const res = await fetch('http://localhost:5000/api/projects', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'x-auth-token': token // Asegúrate que tu backend use este nombre de cabecera
-        },
-        body: JSON.stringify(projectData),
-      });
-      if (res.ok) { 
-        alert("✅ PROYECTO_AÑADIDO_EXITOSAMENTE"); 
-        setProject({ title: '', description: '', technologies: '', githubLink: '', status: 'deployed' }); 
-      } else {
-        alert("❌ ERROR: El servidor rechazó el proyecto");
-      }
-    } catch (err) { alert("❌ ERROR_DE_CONEXIÓN_CON_BACKEND"); }
-  };
-
-  const handleSkillSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    try {
-      const res = await fetch('http://localhost:5000/api/skills', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'x-auth-token': token 
-        },
-        body: JSON.stringify(skill),
-      });
-      if (res.ok) { 
-        alert(`✅ HABILIDAD_REGISTRADA: ${skill.name}`); 
-        setSkill({ name: '', category: 'Lenguajes', level: '80%' }); 
-      }
-    } catch (err) { alert("❌ ERROR_AL_REGISTRAR_SKILL"); }
-  };
-
-  const handlePostSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    
-    // AQUÍ ES DONDE SE ENVÍA TU TEXTO DE MONGODB VS SQL
-    try {
-      const res = await fetch('http://localhost:5000/api/posts', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'x-auth-token': token 
-        },
-        body: JSON.stringify(post),
-      });
-      if (res.ok) { 
-        alert("✅ BLOG_POST_PUBLICADO_CON_ÉXITO"); 
-        setPost({ title: '', content: '', category: 'Backend' }); 
-      } else {
-        alert("❌ ERROR: No se pudo publicar el post");
-      }
-    } catch (err) { alert("❌ ERROR_CRÍTICO_EN_EL_ENVÍO"); }
-  };
-
-  return (
-    <div className="pt-24 min-h-screen bg-[#020617] p-8 font-mono text-white">
-      <div className="max-w-3xl mx-auto border border-fly-away/20 bg-black/60 p-8 backdrop-blur-md shadow-2xl">
-        
-        <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-          <h2 className="text-fly-away font-bold text-xl tracking-tighter uppercase">
-            {`> ADMIN_CONTROL_PANEL_V2`}
-          </h2>
-          <button onClick={() => { localStorage.removeItem('token'); navigate('/admin/login'); }} className="text-[10px] text-red-500 border border-red-500/20 px-2 py-1 hover:bg-red-500 hover:text-white transition-all">LOGOUT</button>
-        </div>
-
-        {/* SELECTOR DE PESTAÑAS */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {['projects', 'skills', 'blog'].map((tab) => (
-            <button 
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 text-[10px] uppercase tracking-widest transition-all border ${activeTab === tab ? 'bg-fly-away/10 border-fly-away text-fly-away' : 'border-white/10 text-gray-500 hover:text-white'}`}
-            >
-              [{tab}]
-            </button>
-          ))}
-        </div>
-
-        {/* FORMULARIO DE PROYECTOS */}
-        {activeTab === 'projects' && (
-          <form onSubmit={handleProjectSubmit} className="space-y-4 animate-in fade-in duration-500">
-            <input type="text" placeholder="PROJECT_TITLE" className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={project.title} onChange={(e) => setProject({...project, title: e.target.value})} required />
-            <textarea placeholder="DESCRIPTION" className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away h-24" value={project.description} onChange={(e) => setProject({...project, description: e.target.value})} required />
-            <input type="text" placeholder="TECH_STACK (Ej: React, Node...)" className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={project.technologies} onChange={(e) => setProject({...project, technologies: e.target.value})} required />
-            <button className="w-full py-4 bg-fly-away/10 border border-fly-away text-fly-away hover:bg-fly-away hover:text-white transition-all font-bold">UPLOAD_PROJECT.exe</button>
-          </form>
-        )}
-
-        {/* FORMULARIO DE SKILLS */}
-        {activeTab === 'skills' && (
-          <form onSubmit={handleSkillSubmit} className="space-y-4 animate-in fade-in duration-500">
-            <input type="text" placeholder="SKILL_NAME (Ej: Python)" className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={skill.name} onChange={(e) => setSkill({...skill, name: e.target.value})} required />
-            <input type="text" placeholder="LEVEL (Ej: 90%)" className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={skill.level} onChange={(e) => setSkill({...skill, level: e.target.value})} required />
-            <select className="w-full bg-[#020617] border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={skill.category} onChange={(e) => setSkill({...skill, category: e.target.value})}>
-              <option value="Frontend">Frontend</option>
-              <option value="Backend">Backend</option>
-              <option value="Database">Database</option>
-              <option value="Lenguajes">Lenguaje</option>
-            </select>
-            <button className="w-full py-4 bg-blue-vault/10 border border-blue-vault text-blue-vault hover:bg-blue-vault hover:text-white transition-all font-bold">REGISTER_SKILL.sh</button>
-          </form>
-        )}
-
-        {/* FORMULARIO DE BLOG */}
-        {activeTab === 'blog' && (
-          <form onSubmit={handlePostSubmit} className="space-y-4 animate-in fade-in duration-500">
-            {/* AQUÍ ES DONDE PEGARÁS LA CONSULTA QUE HICISTE */}
-            <input type="text" placeholder="POST_TITLE" className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={post.title} onChange={(e) => setPost({...post, title: e.target.value})} required />
-            <select className="w-full bg-[#020617] border border-blue-vault/20 p-3 outline-none focus:border-fly-away" value={post.category} onChange={(e) => setPost({...post, category: e.target.value})}>
-              <option value="Backend">Backend</option>
-              <option value="Seguridad">Seguridad</option>
-              <option value="Arquitectura">Arquitectura</option>
-            </select>
-            <textarea placeholder="TU_CONSULTA..." className="w-full bg-blue-vault/5 border border-blue-vault/20 p-3 outline-none focus:border-fly-away h-64 text-sm" value={post.content} onChange={(e) => setPost({...post, content: e.target.value})} required />
-            <button type="submit" className="w-full py-4 bg-green-500/10 border border-green-500/50 text-green-500 hover:bg-green-500 hover:text-white transition-all font-bold uppercase">Publish_Post.log</button>
-          </form>
         )}
 
       </div>
