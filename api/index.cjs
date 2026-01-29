@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
 require('dotenv').config();
 
 // 1. Importación de rutas
@@ -41,6 +42,19 @@ app.get('/api', (req, res) => {
     res.json({ message: 'API funcionando' });
 });
 
+// Servir archivos estáticos del frontend
+const distPath = path.join(__dirname, '../client/dist');
+app.use(express.static(distPath));
+
+// SPA fallback - redirige todas las rutas a index.html (excepto /api)
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(distPath, 'index.html'));
+  } else {
+    res.status(404).json({ msg: 'Ruta no encontrada' });
+  }
+});
+
 // Para desarrollo local
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5000;
@@ -48,5 +62,4 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`🚀 SERVER_OPERATIONAL_PORT: ${PORT}`);
   });
 }
-
 module.exports = app;
