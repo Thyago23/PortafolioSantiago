@@ -2,8 +2,10 @@
   "version": 2,
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/dist",
-  "env": {
-    "MONGO_URI": "@MONGO_URI",
-    "JWT_SECRET": "@JWT_SECRET"
-  }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
