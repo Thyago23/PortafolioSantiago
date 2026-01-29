@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
+import API_URL from '../config/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
